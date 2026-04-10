@@ -51,7 +51,7 @@ fn main() {
     let num_workers = parse_positive_i32("NUM_WORKERS", &num_workers_raw);
     let num_workers_arg = num_workers.to_string();
 
-    let mut children: Vec<(i32, Child)> = Vec::new();
+    let mut children: Vec<(i32, Child)> = Vec::with_capacity(num_devices as usize);
 
     for i in 0..num_devices {
         println!("Running marker on GPU {}", i);
@@ -79,7 +79,9 @@ fn main() {
             }
         }
 
-        thread::sleep(Duration::from_secs(GPU_STAGGER_DELAY_SECS));
+        if i < num_devices - 1 {
+            thread::sleep(Duration::from_secs(GPU_STAGGER_DELAY_SECS));
+        }
     }
 
     let mut failed = false;
