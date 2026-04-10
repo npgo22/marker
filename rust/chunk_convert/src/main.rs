@@ -4,6 +4,8 @@ use std::process::{exit, Child, Command};
 use std::thread;
 use std::time::Duration;
 
+const GPU_STAGGER_DELAY_SECS: u64 = 5;
+
 fn required_env(name: &str) -> String {
     match env::var(name) {
         Ok(value) if !value.trim().is_empty() => value,
@@ -46,6 +48,8 @@ fn main() {
     let num_devices_raw = required_env("NUM_DEVICES");
     let num_workers_raw = required_env("NUM_WORKERS");
     let num_devices = parse_positive_i32("NUM_DEVICES", &num_devices_raw);
+    let num_workers = parse_positive_i32("NUM_WORKERS", &num_workers_raw);
+    let num_workers_arg = num_workers.to_string();
 
     let mut children: Vec<(i32, Child)> = Vec::new();
 
@@ -65,7 +69,7 @@ fn main() {
             .arg("--chunk_idx")
             .arg(i.to_string())
             .arg("--workers")
-            .arg(&num_workers_raw);
+            .arg(&num_workers_arg);
 
         match command.spawn() {
             Ok(child) => children.push((i, child)),
@@ -75,7 +79,7 @@ fn main() {
             }
         }
 
-        thread::sleep(Duration::from_secs(5));
+        thread::sleep(Duration::from_secs(GPU_STAGGER_DELAY_SECS));
     }
 
     let mut failed = false;

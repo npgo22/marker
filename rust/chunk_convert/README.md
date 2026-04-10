@@ -5,7 +5,7 @@ Experimental Rust port of the chunk conversion launcher logic from `marker/scrip
 ## Build
 
 ```bash
-cd /home/runner/work/marker/marker/rust/chunk_convert
+cd rust/chunk_convert
 cargo build --release
 ```
 
